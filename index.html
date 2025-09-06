@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>資料填寫 ➜ 表格彙整</title>
+<style>
+:root {
+--bg: #0b1020; --panel:#121a34; --muted:#8ea6ff; --text:#f5f7ff; --acc:#4c73ff; --line:#26315c;
+}
+*{box-sizing:border-box;font-family: ui-sans-serif, system-ui, -apple-system, "PingFang TC", "Noto Sans TC", Segoe UI, Roboto, Helvetica, Arial;}
+body{margin:0;background:var(--bg);color:var(--text);}
+header{padding:20px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:linear-gradient(180deg, rgba(11,16,32,.95), rgba(11,16,32,.6));backdrop-filter: blur(8px);}
+h1{margin:0;font-size:20px}
+.wrap{display:grid;grid-template-columns: 340px 1fr;gap:16px;padding:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow: 0 10px 30px rgba(0,0,0,.25)}
+.card h2{font-size:16px;margin:0 0 12px 0}
+.pad{padding:16px}
+label{display:block;margin:10px 0 6px;color:var(--muted);font-size:12px}
+input, textarea, select{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0d1430;color:var(--text);}
+textarea{min-height:84px}
+button{cursor:pointer;border:1px solid var(--line);background:#0f1a3c;color:var(--text);padding:10px 14px;border-radius:10px}
+button.primary{background:linear-gradient(180deg,#4c73ff,#2440ff);border-color:#2440ff}
+button.ghost{background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row > *{flex:1}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap}
+table{width:100%;border-collapse: collapse;font-size:14px}
+th, td{border-bottom:1px solid var(--line);padding:10px 12px;vertical-align: top}
+th{position:sticky;top:64px;background:var(--panel);z-index:1}
+tr:hover{background:#0e1634}
+.muted{color:var(--muted)}
+.right{margin-left:auto}
+.pill{font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:999px;color:var(--muted)}
+.actions button{padding:6px 10px;font-size:12px}
+.footer{padding:10px 16px;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+.search{display:flex;gap:8px}
+.hidden{display:none}
+@media (max-width: 980px){ .wrap{grid-template-columns:1fr} th{top:124px}}
+</style>
+</head>
+<body>
+<header>
+<h1>資料填寫 ➜ 表格彙整 <span class="pill" id="status">未儲存</span></h1>
+</header>
+
+
+<div class="wrap">
+<!-- 左：表單設定與輸入 -->
+<section class="card">
+<div class="pad">
+<h2>資料輸入</h2>
+<form id="dataForm"></form>
+<div class="toolbar" style="margin-top:12px">
+<button class="primary" id="saveBtn">新增資料</button>
+<button class="ghost" id="resetBtn" type="button">清空表單</button>
+</div>
+</div>
+<div class="footer">
+欄位想客製？到下方「欄位設定」修改後立即生效。
+</div>
+</section>
+
+
+<!-- 右：表格與工具 -->
+<section class="card">
+<div class="pad">
+<div class="row" style="align-items:center;margin-bottom:8px">
+<h2 style="margin:0">彙整表格</h2>
+<span class="pill" id="count">0 筆</span>
+<span class="right"></span>
+<div class="search">
+<input id="q" placeholder="關鍵字搜尋（即時）" />
+<button id="clearQ" type="button">清除</button>
+</div>
+</div>
+
+
+<div class="toolbar" style="margin:6px 0 12px 0">
+<button id="exportCsv" type="button">匯出 CSV</button>
+<label class="pill" style="cursor:pointer"><input id="importCsv" type="file" accept=".csv" class="hidden"/> 匯入 CSV</label>
+<button id="copyJson" type="button">複製 JSON</button>
+<span class="right"></span>
+<button id="clearAll" type="button">全部清除</button>
+</div>
+
