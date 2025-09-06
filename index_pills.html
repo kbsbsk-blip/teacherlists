@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>講師資料蒐集表</title>
+  <style>
+    body{margin:0;background:#f7f7fb;color:#1f2937;font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,Noto Sans TC,Arial}
+    .container{max-width:1100px;margin:32px auto;padding:0 16px}
+    h1{font-size:24px;margin-bottom:8px}
+    .card{background:#fff;border-radius:16px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:18px;margin-bottom:20px}
+    .field{margin-bottom:14px}
+    label{font-weight:600;display:block;margin-bottom:6px}
+    input,textarea,select{border:1px solid #e5e7eb;border-radius:8px;padding:10px;box-sizing:border-box}
+    textarea{resize:vertical;min-height:80px}
+    .btns{display:flex;gap:10px;margin-top:12px}
+    button{padding:10px 14px;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+    button.ok{background:#2563eb;color:#fff}
+    button.secondary{background:#f3f4f6}
+    button.warn{background:#dc2626;color:#fff}
+    table{width:100%;border-collapse:collapse;margin-top:16px}
+    th,td{border:1px solid #e5e7eb;padding:8px;vertical-align:top}
+    .inline-options label{margin-right:16px;font-weight:400}
+    .pill-options label{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:4px 10px;margin:2px 6px 2px 0;font-weight:400}
+    .pill-options input{margin-right:6px}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>講師資料蒐集表</h1>
+    <section class="card">
+      <form id="f">
+        <div class="field"><label>姓名<input id="name" required></label></div>
+        <div class="field"><label>性別</label>
+          <div class="inline-options">
+            <label><input type="radio" name="gender" value="男" checked> 男</label>
+            <label><input type="radio" name="gender" value="女"> 女</label>
+            <label><input type="radio" name="gender" value="其他/不透露"> 其他/不透露</label>
+          </div>
+        </div>
+        <div class="field"><label>出生年月日<input id="dob" type="date"></label></div>
+        <div class="field"><label>身分證號碼<input id="twid" maxlength="10"></label></div>
+        <div class="field"><label>手機號碼<input id="phone" placeholder="09xxxxxxxx"></label></div>
+        <div class="field"><label>Line ID<input id="lineId"></label></div>
+        <div class="field"><label>信箱<input id="email" type="email"></label></div>
+        <div class="field"><label>可授課地區<input id="region"></label></div>
+        <div class="field"><label>可授課日期（可複選）</label>
+          <div class="pill-options">
+            <label><input type="checkbox" name="dow" value="週一">週一</label>
+            <label><input type="checkbox" name="dow" value="週二">週二</label>
+            <label><input type="checkbox" name="dow" value="週三">週三</label>
+            <label><input type="checkbox" name="dow" value="週四">週四</label>
+            <label><input type="checkbox" name="dow" value="週五">週五</label>
+          </div>
+        </div>
+        <div class="field"><label>可授課時間（起）<input id="timeStart" type="time"></label></div>
+        <div class="field"><label>可授課時間（迄）<input id="timeEnd" type="time"></label></div>
+        <div class="field"><label>專長<textarea id="skills"></textarea></label></div>
+        <div class="field"><label>與授課主題相關證照、學經歷、授課經驗<textarea id="quals"></textarea></label></div>
+        <div class="btns">
+          <button type="submit" class="ok">儲存到表格</button>
+          <button type="button" id="clear" class="secondary">清空表單</button>
+        </div>
+      </form>
+    </section>
+    <section class="card">
+      <h2>資料彙整表</h2>
+      <table id="tbl">
+        <thead>
+          <tr><th>#</th><th>姓名</th><th>性別</th><th>生日</th><th>身分證</th><th>聯絡方式</th><th>地區</th><th>可授課日/時間</th><th>專長</th><th>證照/學經歷/授課</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+  </div>
+  <script>
+    const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+    let data=[];
+    function render(){
+      const tb=$('#tbl tbody'); tb.innerHTML='';
+      data.forEach((r,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td>${i+1}</td><td>${r.name}</td><td>${r.gender}</td><td>${r.dob}</td><td>${r.twid}</td><td>${[r.phone,r.lineId,r.email].filter(Boolean).join('<br>')}</td><td>${r.region}</td><td>${(r.dow||[]).join('、')}<br>${r.timeStart}–${r.timeEnd}</td><td>${r.skills}</td><td>${r.quals}</td>`;
+        tb.appendChild(tr);
+      });
+    }
+    $('#f').addEventListener('submit',e=>{
+      e.preventDefault();
+      const r={
+        name:$('#name').value.trim(),
+        gender:($$('input[name="gender"]:checked')[0]||{}).value,
+        dob:$('#dob').value,
+        twid:$('#twid').value.trim(),
+        phone:$('#phone').value.trim(),
+        lineId:$('#lineId').value.trim(),
+        email:$('#email').value.trim(),
+        region:$('#region').value.trim(),
+        dow:$$('input[name="dow"]:checked').map(x=>x.value),
+        timeStart:$('#timeStart').value,
+        timeEnd:$('#timeEnd').value,
+        skills:$('#skills').value.trim(),
+        quals:$('#quals').value.trim()
+      };
+      data.push(r); render(); e.target.reset();
+    });
+    $('#clear').addEventListener('click',()=>$('#f').reset());
+  </script>
+</body>
+</html>
